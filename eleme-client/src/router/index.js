@@ -55,7 +55,7 @@ const router = createRouter({
                     children: [
                         {
                             path: 'shopDetail', // 商铺详情页
-                            component: () => import('../pages/shop/children/shopDetail')
+                            component: () => import('../pages/shop/children/ShopDetail')
                         },
                         {
                             path: 'shopChat', // 联系商家

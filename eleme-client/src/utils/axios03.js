@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import LocalStorage  from './localStorage'
+import LocalStorage  from './localstorage'
 
 const baseURL = 'http://localhost:8080/boot'
 // const baseURL = 'http://htuqn6.natappfree.cc/boot'

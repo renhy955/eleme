@@ -17,8 +17,8 @@ import i18n from './lang' // Internationalization
 import '@/icons' // icon
 // permission control
 import './permission'
-import LemonIMUI from 'lemon-imui';
-import 'lemon-imui/dist/index.css';
+// import LemonIMUI from 'lemon-imui';
+// import 'lemon-imui/dist/index.css';
 
 Vue.use(ElementUI, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
@@ -26,7 +26,7 @@ Vue.use(ElementUI, {
 })
 Vue.component('v-chart', ECharts)
 Vue.config.productionTip = false
-Vue.use(LemonIMUI)
+// Vue.use(LemonIMUI)
 new Vue({
   el: '#app',
   router,

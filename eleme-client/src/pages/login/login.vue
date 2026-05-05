@@ -52,7 +52,7 @@ import { login,getLoginCode } from '@/api8080/login'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import HeadTop from '@/components/HeadTop'
-import LocalStorage from '../../utils/localStorage'
+import LocalStorage from '../../utils/localstorage'
 export default {
     components: {
         HeadTop

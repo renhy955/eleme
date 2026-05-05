@@ -79,7 +79,7 @@ import { useRouter } from 'vue-router'
 import { imgBaseUrl } from '@/config/env'
 import { getOrderList } from '@/api8080/order'
 import HeadTop from '@/components/HeadTop'
-import ComputeTime from '@/components/ComputeTime'
+import ComputeTime from '@/components/computeTime'
 import router from '../../router'
 export default {
     components: {
