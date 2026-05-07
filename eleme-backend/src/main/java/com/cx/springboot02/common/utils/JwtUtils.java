@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class JwtUtils {
                 .setExpiration(new Date(System.currentTimeMillis()+ EXPIRE_TIME03))
                 .setSubject(name)
                 .setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS256,KEY);
+                .signWith(SignatureAlgorithm.HS256, KEY.getBytes(StandardCharsets.UTF_8));
         return builder.compact();
     }
 
@@ -77,8 +78,7 @@ public class JwtUtils {
         }
         Claims claims = null;
         try {
-            //token过期后，会抛出ExpiredJwtException 异常，通过这个来判定token过期，
-            claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(KEY.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
         }catch (Exception e){
           return null;
         }
@@ -105,8 +105,7 @@ public class JwtUtils {
         }
         Claims claims = null;
         try {
-            //token过期后，会抛出ExpiredJwtException 异常
-            claims = Jwts.parser().setSigningKey(KEY).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(KEY.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
         }catch (Exception e){
             return null;
         }

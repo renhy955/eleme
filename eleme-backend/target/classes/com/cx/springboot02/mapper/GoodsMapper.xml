@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.GoodsMapper">
+    <insert id="insertGoods">
+        insert into takeoutweb.goods
+        ( name, category_id, image_path, description, min_specs_count, is_single) VALUES (#{name},#{categoryId},#{imagePath},#{description},#{minSpecsCount},#{isSingle})
+    </insert>
+    <update id="replaceOneSkuId">
+        update takeoutweb.food
+        set food.specs_list = replace('specs_list',#{skuId},'#')
+        where goods_id = #{goods_id}
+    </update>
+
+    <select id="selectGoodsByCId" resultType="com.cx.springboot02.pojo.Goods">
+        select *
+        from takeoutweb.goods
+        where goods.category_id = #{cid} and goods.on_shelves = true #商品需要被上架才能展示给客户端
+    </select>
+    <select id="selectSpuList" resultType="com.cx.springboot02.data.vo.SpuDetailVo">
+        select takeoutweb.goods.*,business.id as shopId,business.name as ShopName,business.address as shopAddress,category.name as categoryName
+        from takeoutweb.goods
+        JOIN takeoutweb.category  ON goods.`category_id` = category.`id`
+        JOIN takeoutweb.business ON category.`business_id` = business.`id`
+        <where>
+            <if test="key != null">
+                and takeoutweb.goods.name like #{key}
+            </if>
+            <if test="categoryId != null">
+                and takeoutweb.goods.category_id = #{categoryId}
+            </if>
+            <if test="id != null">
+                and takeoutweb.goods.id = #{id}
+            </if>
+            <if test="shopId != null">
+                and takeoutweb.business.id like #{shopId}
+            </if>
+        </where>
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectSpuListCount" resultType="java.lang.Integer">
+        select count(*)
+        from takeoutweb.goods
+        <if test="shopId != null">
+            JOIN takeoutweb.category  ON goods.`category_id` = category.`id`
+            JOIN takeoutweb.business ON category.`business_id` = business.`id`
+        </if>
+        <where>
+            <if test="key != null">
+                and takeoutweb.goods.name like #{key}
+            </if>
+            <if test="categoryId != null">
+                and takeoutweb.goods.category_id = #{categoryId}
+            </if>
+            <if test="id != null">
+                and takeoutweb.goods.id = #{id}
+            </if>
+            <if test="shopId != null">
+                and takeoutweb.business.id like #{shopId}
+            </if>
+        </where>
+    </select>
+    <select id="selectAllIdAndName" resultType="com.cx.springboot02.data.vo.ElasticSearchSpuVo">
+        select goods.id,goods.name,category.business_id
+        from takeoutweb.goods
+        join takeoutweb.category on goods.category_id = category.id
+        join takeoutweb.business on business.id = category.business_id
+        where takeoutweb.goods.on_shelves = true and business.deactivate = false and business.check_pass = 1 #未被禁用 且 审核通过
+    </select>
+
+</mapper>

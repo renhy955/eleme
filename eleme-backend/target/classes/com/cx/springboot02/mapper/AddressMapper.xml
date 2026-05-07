@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.AddressMapper">
+    <update id="updateDefaultByCId">
+        update takeoutweb.address
+        set address.is_default = false
+        where cid = #{cid}
+    </update>
+    <delete id="deleteByIdAndCid">
+        delete from takeoutweb.address where cid=#{cid} and id=#{id}
+    </delete>
+
+
+    <select id="selectAddressByCid" resultType="com.cx.springboot02.pojo.Address">
+        select * from takeoutweb.address where cid = #{cid}
+    </select>
+</mapper>

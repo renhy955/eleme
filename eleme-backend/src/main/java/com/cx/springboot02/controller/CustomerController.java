@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
-
 
 /**
  * <p>
@@ -74,7 +72,7 @@ public class CustomerController {
             //设置长宽
             VerifyCode verifyCode = iVerifyCodeGen.generate(80, 28);
             String code = verifyCode.getCode();
-            LOGGER.info(code);
+            log.info(code);
             //将VerifyCode绑定session
             request.getSession().setAttribute("VerifyCode", code);
             UUID uuid = UUID.randomUUID();

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.OrderMapper">
+
+
+    <update id="updateOrder">
+        update takeoutweb.`order` set order_state = #{orderState} where id=#{id}
+    </update>
+    <select id="selectOrderListByCId" resultType="com.cx.springboot02.data.vo.OrderListVo">
+        SELECT *
+        FROM takeoutweb.`order`
+        <where>
+            <if test="cid != null">
+                and takeoutweb.order.customer_id = #{cid}
+            </if>
+        </where>
+        ORDER BY takeoutweb.order.create_time DESC
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectShopOrderList" resultType="com.cx.springboot02.data.vo.OrderListVo">
+        SELECT *
+        FROM takeoutweb.`order`
+        <where>
+            <if test="oid != null">
+                and takeoutweb.order.id = #{oid}
+            </if>
+            <if test="key != null">
+                and takeoutweb.order.address like #{key}
+            </if>
+            <if test="cid != null">
+                and takeoutweb.order.customer_id like #{cid}
+            </if>
+            <if test="shopId != null">
+                and takeoutweb.order.shop_id = #{shopId}
+            </if>
+            <if test="stateCode != null">
+                and takeoutweb.order.order_state = #{stateCode}
+            </if>
+        </where>
+        ORDER BY takeoutweb.order.create_time DESC
+        <if test="pagesize != null and offset != null">
+             limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectShopOrderListNum" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM takeoutweb.`order`
+        <where>
+            <if test="oid != null">
+                and takeoutweb.order.id = #{oid}
+            </if>
+            <if test="key != null">
+                and takeoutweb.order.address like #{key}
+            </if>
+            <if test="cid != null">
+                and takeoutweb.order.customer_id like #{cid}
+            </if>
+            <if test="shopId != null">
+                and takeoutweb.order.shop_id = #{shopId}
+            </if>
+            <if test="stateCode != null">
+                and takeoutweb.order.order_state = #{stateCode}
+            </if>
+        </where>
+    </select>
+
+</mapper>

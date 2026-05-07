@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.FoodMapper">
+    <update id="updateSkuList">
+        update takeoutweb.food
+        set food.specs_list = concat(specs_list,#{str})
+        where goods_id = #{goodsId}
+    </update>
+    <delete id="deleteBySpecsId">
+        delete from takeoutweb.food
+        where goods_id= #{goodId}  and locate(#{str},takeoutweb.food.specs_list)
+    </delete>
+
+    <select id="selectFoodListByGId_Not_Single" resultType="com.cx.springboot02.pojo.Food">
+        select *
+        from takeoutweb.food
+        where food.goods_id = #{gid} and  food.is_single = false;
+    </select>
+    <select id="selectFoodListByGId_Single" resultType="com.cx.springboot02.pojo.Food">
+        select *
+        from takeoutweb.food
+        where food.goods_id = #{gid} and  food.is_single = true;
+    </select>
+    <select id="selectBySkuId" resultType="com.cx.springboot02.pojo.Food">
+        select *
+        from takeoutweb.food
+        where sku_id = #{id}
+    </select>
+    <select id="selectSkuDetailVoList" resultType="com.cx.springboot02.data.vo.SkuDetailVo">
+        select *
+        from takeoutweb.food
+        where goods_id = #{id}
+    </select>
+    <select id="selectSkuBySingleSpuId" resultType="com.cx.springboot02.pojo.Food">
+        select *
+        from takeoutweb.food
+        where goods_id = #{gid}
+        limit 0,1
+    </select>
+</mapper>

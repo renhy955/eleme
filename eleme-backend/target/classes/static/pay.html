@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/boot/order/alipay" method="post" id="form">
+    订单号：<input type="text" name="outTradeNo" id="outTradeNo" required><br/>
+    订单名称：<input type="text" name="subject" id="subject" required><br/>
+    付款金额：<input type="text" name="totalAmount" id="totalAmount" required><br/>
+    商品描述：<input type="text" name="body" id="body"><br/>
+    <input type="submit" value="下单"> <input type="reset" value="重置">
+</form>
+</body>
+<script>
+    function getQueryVariable(variable)
+    {
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i=0;i<vars.length;i++) {
+            let pair = vars[i].split("=");
+            if(pair[0] === variable){return pair[1];}
+        }
+        return "";
+    }
+    let outTradeNo = getQueryVariable("outTradeNo")
+    let subject = getQueryVariable("subject")
+    let totalAmount = Number(getQueryVariable("totalAmount"))
+    let body = getQueryVariable("body")
+    document.getElementById("outTradeNo").value = outTradeNo
+    document.getElementById("subject").value = subject
+    document.getElementById("totalAmount").value = totalAmount
+    document.getElementById("body").value = body
+
+    const fun = async ()=>{
+        if(outTradeNo==="" || outTradeNo==null ||  subject==="" || subject==null ||  totalAmount==null || totalAmount<=0  || body==="" || body==null){
+            console.log("error")
+        }else{
+            let form = document.getElementById('form')
+            form.submit();
+            console.log("outTradeNo",outTradeNo)
+            console.log("subject",subject)
+            console.log("totalAmount",totalAmount)
+            console.log("body",body)
+        }
+    }
+    fun()
+
+
+//localhost:8080/boot/pay.html
+
+</script>
+</html>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.BusinessMapper">
+    <select id="selectBusinessById" resultType="com.cx.springboot02.pojo.Business">
+        select *
+        from takeoutweb.business
+        where id = #{id}
+    </select>
+    <select id="checkBusiness" resultType="com.cx.springboot02.pojo.Business">
+        select *
+        from takeoutweb.business
+        where account = #{name}
+          and password = #{password}
+    </select>
+    <select id="selectBusinessListByDistance" resultType="com.cx.springboot02.dto.ShopDto">
+        SELECT *
+        FROM (
+        SELECT
+        *,
+        ROUND(
+        6378.138 * 2 * ASIN(
+        SQRT(
+        POW(
+        SIN((
+        #{latitude} * PI()/ 180-latitude * PI()/ 180
+        )/ 2
+        ),
+        2
+        )+ COS( #{latitude} * PI()/ 180 )* COS( latitude * PI()/ 180 )* POW(
+        SIN((
+        #{longitude} * PI()/ 180-longitude * PI()/ 180
+        )/ 2
+        ),
+        2
+        )))* 1000
+        ) AS distance
+        FROM takeoutweb.business
+        <if test="sid != null">
+            right join(select distinct bid from takeoutweb.business_to_shopclass where sid=#{sid} and is_delete = false)
+            as b1
+            on b1.bid = business.id
+        </if>
+        <where>
+            business.deactivate = false and business.check_pass = 1
+            <if test="key != null">
+                and takeoutweb.business.name like concat('%',#{key},'%')
+            </if>
+            <if test="fengniao != null">
+                and takeoutweb.business.delivery_mode = #{fengniao}
+            </if>
+            <if test="piao!=null">
+                and takeoutweb.business.piao = #{piao}
+            </if>
+            <if test="xin!=null">
+                and takeoutweb.business.new_shop = #{xin}
+            </if>
+            <if test="zhun!=null">
+                and takeoutweb.business.zhun = #{zhun}
+            </if>
+            <if test="bao!=null">
+                and takeoutweb.business.bao = #{bao}
+            </if>
+            <if test="ping!=null">
+                and takeoutweb.business.is_premium = #{ping}
+            </if>
+            <if test="shopclassid != null">
+            and takeoutweb.business.shop_class_id = #{shopclassid}
+            </if>
+
+        </where>
+        ORDER BY distance
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+        ) as t1
+
+    </select>
+    <select id="selectBusinessList" resultType="com.cx.springboot02.data.vo.ShopDetailVo">
+        select *
+        from takeoutweb.business
+        <where>
+            <if test="key != null">
+                and takeoutweb.business.name like #{key}
+            </if>
+            <if test="classId != null">
+                and takeoutweb.business.shop_class_id = #{classId}
+            </if>
+            <if test="checkPass != null">
+                and takeoutweb.business.check_pass = #{checkPass}
+            </if>
+        </where>
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectCheckStateShopList" resultType="com.cx.springboot02.pojo.Business">
+        select id, account, name, address, phone, latitude, longitude, category, image_path, float_delivery_fee, float_minimum_order_amount, description, promotion_info, is_premium, delivery_mode, new_shop, bao, zhun, piao, start_time, end_time, business_license_image, catering_service_license_image
+        from takeoutweb.business
+        <where>
+            <if test="state != null">
+                and takeoutweb.business.check_pass = #{state}
+            </if>
+        </where>
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectALl" resultType="com.cx.springboot02.pojo.Business">
+        select *
+        from takeoutweb.business
+        <if test="pagesize != null and offset != null">
+            limit ${offset}, ${pagesize}
+        </if>
+    </select>
+    <select id="selectBusinessListCount" resultType="java.lang.Integer">
+        select count(*)
+        from takeoutweb.business
+        <where>
+            <if test="key != null">
+                and takeoutweb.business.name like #{key}
+            </if>
+            <if test="classId != null">
+                and takeoutweb.business.shop_class_id = #{classId}
+            </if>
+            <if test="checkPass != null">
+                and takeoutweb.business.check_pass = #{checkPass}
+            </if>
+        </where>
+    </select>
+    <select id="selectAllIdAndName" resultType="com.cx.springboot02.data.vo.ElasticSearchShopVo">
+        select id,name,longitude,latitude
+        from takeoutweb.business
+        where business.deactivate = false and business.check_pass = 1
+    </select>
+    <select id="selectShopDtoByES" resultType="com.cx.springboot02.dto.ShopDto">
+        select *
+        from takeoutweb.business
+        <where>
+            business.deactivate = false and business.check_pass = 1 # 没有被禁用 并且 审核通过
+            <if test="id != null">
+                and takeoutweb.business.id = #{id}
+            </if>
+            <if test="fengniao != null">
+                and takeoutweb.business.delivery_mode = #{fengniao}
+            </if>
+            <if test="piao!=null">
+                and takeoutweb.business.piao = #{piao}
+            </if>
+            <if test="xin!=null">
+                and takeoutweb.business.new_shop = #{xin}
+            </if>
+            <if test="zhun!=null">
+                and takeoutweb.business.zhun = #{zhun}
+            </if>
+            <if test="bao!=null">
+                and takeoutweb.business.bao = #{bao}
+            </if>
+            <if test="ping!=null">
+                and takeoutweb.business.is_premium = #{ping}
+            </if>
+            <if test="shopclassid != null">
+                and takeoutweb.business.shop_class_id = #{shopclassid}
+            </if>
+        </where>
+    </select>
+</mapper>

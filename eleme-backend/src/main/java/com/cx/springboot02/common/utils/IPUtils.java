@@ -1,11 +1,11 @@
 package com.cx.springboot02.common.utils;
 
 import eu.bitwalker.useragentutils.UserAgent;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
-
+@Slf4j
 public class IPUtils {
     public static void main(String[] args) {
 
@@ -13,7 +13,7 @@ public class IPUtils {
     public void getClientType(HttpServletRequest request){
         UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("user-agent"));
         String clientType = userAgent.getOperatingSystem().getDeviceType().toString();
-        LOGGER.info("clientType = "+clientType);   //客户端类型  手机、电脑、平板
+        log.info("clientType = "+clientType);
     }
 
     public String getOperatingSystemName(HttpServletRequest request){

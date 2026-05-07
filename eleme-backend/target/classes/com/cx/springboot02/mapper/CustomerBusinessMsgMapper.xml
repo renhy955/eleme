@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.CustomerBusinessMsgMapper">
+
+    <select id="selectMsgList" resultType="com.cx.springboot02.data.vo.CustomerBusinessMsgVo">
+        select *
+        from takeoutweb.customer_business_msg
+        where customer_business_msg.customer_id = #{customerId} and customer_business_msg.business_id = #{businessId}
+<!--        <if test="pagesize != null and offset != null">-->
+<!--            limit ${offset}, ${pagesize}-->
+<!--        </if>-->
+    </select>
+    <select id="selectListNum" resultType="java.lang.Integer">
+        select count(*)
+        from takeoutweb.customer_business_msg
+        where customer_business_msg.customer_id = #{customerId} and customer_business_msg.business_id = #{businessId}
+    </select>
+    <select id="getCustomerList" resultType="com.cx.springboot02.data.vo.ChatCustomerListVo">
+        select takeoutweb.customer.*
+        from (select distinct customer_id  from takeoutweb.customer_business_msg where business_id=#{bid}) as t1
+        join takeoutweb.customer on t1.customer_id = customer.id
+        join (select distinct customer_id from takeoutweb.order) t2 on t2.customer_id = t1.customer_id
+    </select>
+</mapper>

@@ -6,13 +6,9 @@ import com.cx.springboot02.common.pay.AliPay;
 import com.cx.springboot02.common.pay.AliReturnPayBean;
 import com.cx.springboot02.common.pay.PayUtil;
 import com.cx.springboot02.common.utils.Final;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.sql.rowset.serial.SerialStruct;
 
 @Service
 @Slf4j

@@ -94,8 +94,15 @@ public class OrderCancelConsumerSchedule implements CommandLineRunner {
         consumer.start();
     }
 
+    @Value("${rocketmq.producer.isOnOff:off}")
+    private String isOnOff;
+
     @Override
     public void run(String... args) throws Exception {
-        this.messageListener();
+        if ("on".equalsIgnoreCase(isOnOff)) {
+            this.messageListener();
+        } else {
+            log.info("RocketMQ is disabled, skipping consumer startup");
+        }
     }
 }

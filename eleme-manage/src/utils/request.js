@@ -7,7 +7,7 @@ import LocalStorage from '@/utils/localstorage'
 // 创建axios实例
 const service = axios.create({
   // baseURL: process.env.BASE_API, // api的base_url
-  baseURL: 'http://localhost:8080/boot',
+  baseURL: '/boot',
   withCredentials: true, // send cookies when cross-domain requests
   timeout: 10000
 })

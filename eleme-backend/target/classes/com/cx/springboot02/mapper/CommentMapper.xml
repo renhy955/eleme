@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cx.springboot02.mapper.CommentMapper">
+
+    <select id="selectCommentList" resultType="com.cx.springboot02.data.vo.CommentVo">
+        select takeoutweb.comment.*
+        from takeoutweb.comment
+        <if test="haveImg != null">
+            right join takeoutweb.comment_img ci on comment.id = ci.comment_id
+        </if>
+        <if test="haveImg != null and haveImg==false">
+            left join takeoutweb.comment_img ci on comment.id = ci.comment_id
+        </if>
+        <where>
+            comment.is_customer = true
+            <if test="cid != null">
+                and comment.customer_id = #{cid}
+            </if>
+            <if test="shopId != null">
+                and comment.shop_id = #{shopId}
+            </if>
+            <if test="MingRating != null">
+                and comment.rating &gt;= #{MingRating}
+            </if>
+            <if test="haveImg != null and haveImg==false">
+                and ci.id is null
+            </if>
+        </where>
+        <if test="offset != null and size != null">
+            limit ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectCommentListCount" resultType="java.lang.Integer">
+        select count(*)
+        from takeoutweb.comment
+        <if test="haveImg != null and haveImg==true">
+            right join takeoutweb.comment_img ci on comment.id = ci.comment_id
+        </if>
+        <if test="haveImg != null and haveImg==false">
+            left join takeoutweb.comment_img ci on comment.id = ci.comment_id
+        </if>
+
+        <where>
+            comment.is_customer = true
+            <if test="cid != null">
+                and comment.customer_id = #{cid}
+            </if>
+            <if test="shopId != null">
+                and comment.shop_id = #{shopId}
+            </if>
+            <if test="MingRating != null">
+                and comment.rating &gt;= #{MingRating}
+            </if>
+            <if test="haveImg != null and haveImg==false">
+                and ci.id is null
+            </if>
+        </where>
+    </select>
+
+                          <!--客户端和商家端分界线 -->
+    <select id="selectShopCommentList" resultType="com.cx.springboot02.data.vo.CommentShopVo">
+        select com1.*
+        from takeoutweb.comment as com1
+        <if test="haveImg != null and haveImg==true">
+            right join takeoutweb.comment_img ci on com1.id = ci.comment_id
+        </if>
+        <if test="haveImg != null and haveImg==false">
+            left join takeoutweb.comment_img ci on com1.id = ci.comment_id
+        </if>
+        <where>
+            com1.is_customer = true
+            <if test="haveReply != null and haveReply == true">
+                and (select 1 from comment as com2 where com2.parent = com1.id limit 1)
+            </if>
+            <if test="haveReply != null and haveReply == false">
+                and (select 1 from comment as com2 where com2.parent = com1.id limit 1) is null
+            </if>
+            <if test="haveImg != null and haveImg==false">
+                and ci.id is null
+            </if>
+            <if test="cid != null">
+                and com1.customer_id = #{cid}
+            </if>
+            <if test="shopId != null">
+                and com1.shop_id = #{shopId}
+            </if>
+            <if test="MingRating != null">
+                and com1.rating &gt;= #{MingRating}
+            </if>
+        </where>
+        <if test="offset != null and size != null">
+            limit ${offset}, ${size}
+        </if>
+    </select>
+    <select id="selectShopCommentListCount" resultType="java.lang.Integer">
+        select count(*)
+        from takeoutweb.comment as com1
+        <if test="haveImg != null and haveImg==true">
+            right join takeoutweb.comment_img ci on com1.id = ci.comment_id
+        </if>
+        <if test="haveImg != null and haveImg==false">
+            left join takeoutweb.comment_img ci on com1.id = ci.comment_id
+        </if>
+        <where>
+            com1.is_customer = true
+            <if test="haveReply != null and haveReply == true">
+                and (select 1 from comment as com2 where com2.parent = com1.id limit 1)
+            </if>
+            <if test="haveReply != null and haveReply == false">
+                and (select 1 from comment as com2 where com2.parent = com1.id limit 1) is null
+            </if>
+            <if test="haveImg != null and haveImg==false">
+                and ci.id is null
+            </if>
+            <if test="cid != null">
+                and com1.customer_id = #{cid}
+            </if>
+            <if test="shopId != null">
+                and com1.shop_id = #{shopId}
+            </if>
+            <if test="MingRating != null">
+                and com1.rating &gt;= #{MingRating}
+            </if>
+        </where>
+    </select>
+</mapper>
