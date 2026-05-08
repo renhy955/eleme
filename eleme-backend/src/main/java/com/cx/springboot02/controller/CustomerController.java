@@ -81,7 +81,7 @@ public class CustomerController {
             //把图片存入服务器
             FileTool.uploadFiles(verifyCode.getImgBytes(),uploadFolder+uploadImage,newFileName);
             //返回图片url
-            return ResultTool.success("http://127.0.0.1:8080/boot/file/image"+"/"+newFileName);
+            return ResultTool.success("/boot/file/image/"+newFileName);
         } catch (IOException e) {
             return ResultTool.fail(ResultCode.COMMON_FAIL);
 

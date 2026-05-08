@@ -186,7 +186,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         //拿到method
         Method method = handlerMethod.getMethod();
         //拿到clz对象
-        Class clz = method.getClass();
+        Class clz = handlerMethod.getBeanType();
         //判断是否有权限发此请求
         //拿到方法上的注解,为空或者没有权限参数的方法不给访问
         PreAuthorize preAuthorize = method.getAnnotation(PreAuthorize.class);
@@ -196,17 +196,21 @@ public class TokenInterceptor implements HandlerInterceptor {
             return false;
         }
         //拿到类上的权限列表,判断类上的注解是否符合
-        AuthorizeType[] values = preAuthorizeCLZ.values();
-        for (AuthorizeType authorizeType : values) {
-            if(identity.equals(authorizeType)){
-                return true;
+        if(preAuthorizeCLZ != null){
+            AuthorizeType[] values = preAuthorizeCLZ.values();
+            for (AuthorizeType authorizeType : values) {
+                if(identity.equals(authorizeType)){
+                    return true;
+                }
             }
         }
         //拿到方法上面的权限列表
-        assert preAuthorize != null;values = preAuthorize.values();
-        for (AuthorizeType authorizeType : values) {
-            if(identity.equals(authorizeType)){
-                return true;
+        if(preAuthorize != null){
+            AuthorizeType[] values = preAuthorize.values();
+            for (AuthorizeType authorizeType : values) {
+                if(identity.equals(authorizeType)){
+                    return true;
+                }
             }
         }
         return false;
@@ -222,7 +226,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         //拿到method
         Method method = ((HandlerMethod) handler).getMethod();
         //拿到clz对象
-        Class clz = method.getClass();
+        Class clz = ((HandlerMethod) handler).getBeanType();
         //判断是否有放行注解
         Unobstructed unobstructed1 = method.getAnnotation(Unobstructed.class);
         Unobstructed unobstructed2 = (Unobstructed) clz.getAnnotation(Unobstructed.class);

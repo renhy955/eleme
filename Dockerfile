@@ -80,14 +80,40 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 
-# 安装所有依赖：JDK、Nginx、MySQL、Redis
+# 安装所有依赖：JDK、Nginx、MySQL、Redis、Elasticsearch
 RUN apt-get update && apt-get install -y --fix-missing --no-install-recommends \
     openjdk-8-jre \
     nginx \
     mysql-server \
     redis-server \
     supervisor \
+    wget \
+    curl \
+    gnupg \
+    apt-transport-https \
     && rm -rf /var/lib/apt/lists/*
+
+# 安装Elasticsearch 7.17.9 (兼容Spring Boot 2.7.x)
+RUN wget --tries=3 --timeout=60 --no-check-certificate -O /tmp/elasticsearch.tar.gz \
+    "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.9-linux-x86_64.tar.gz" && \
+    tar -xzf /tmp/elasticsearch.tar.gz -C /opt && \
+    mv /opt/elasticsearch-7.17.9 /opt/elasticsearch && \
+    rm /tmp/elasticsearch.tar.gz && \
+    useradd -r -s /bin/false elasticsearch && \
+    chown -R elasticsearch:elasticsearch /opt/elasticsearch
+
+# 配置Elasticsearch
+RUN echo 'cluster.name: eleme-cluster' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'node.name: node-1' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'path.data: /opt/elasticsearch/data' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'path.logs: /opt/elasticsearch/logs' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'network.host: 127.0.0.1' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'http.port: 9200' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'discovery.type: single-node' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'xpack.security.enabled: false' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    echo 'bootstrap.memory_lock: false' >> /opt/elasticsearch/config/elasticsearch.yml && \
+    sed -i 's/-Xms1g/-Xms512m/g' /opt/elasticsearch/config/jvm.options && \
+    sed -i 's/-Xmx1g/-Xmx512m/g' /opt/elasticsearch/config/jvm.options
 
 # 设置Java环境变量
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -98,6 +124,7 @@ COPY --from=backend-build /app/target/eleme-backend-0.0.1-SNAPSHOT.jar app.jar
 
 # 复制数据库初始化SQL文件
 COPY eleme-introductionandrun/sql.txt /app/init.sql
+COPY eleme-introductionandrun/init-data.sql /app/init-data.sql
 
 # 复制前端静态文件
 COPY --from=manage-build /app/dist /var/www/html/manage
@@ -143,6 +170,15 @@ RUN echo '[supervisord]' > /etc/supervisor/conf.d/eleme.conf && \
     echo 'autorestart=true' >> /etc/supervisor/conf.d/eleme.conf && \
     echo 'priority=20' >> /etc/supervisor/conf.d/eleme.conf && \
     echo '' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo '[program:elasticsearch]' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'command=/opt/elasticsearch/bin/elasticsearch' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'user=elasticsearch' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'autostart=true' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'autorestart=true' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'priority=25' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'stdout_logfile=/app/logs/elasticsearch.log' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo 'stderr_logfile=/app/logs/elasticsearch.err' >> /etc/supervisor/conf.d/eleme.conf && \
+    echo '' >> /etc/supervisor/conf.d/eleme.conf && \
     echo '[program:nginx]' >> /etc/supervisor/conf.d/eleme.conf && \
     echo 'command=/usr/sbin/nginx -g "daemon off;"' >> /etc/supervisor/conf.d/eleme.conf && \
     echo 'autostart=true' >> /etc/supervisor/conf.d/eleme.conf && \
@@ -182,10 +218,10 @@ if [ ! -d "/var/lib/mysql/takeoutweb" ]; then\n\
     echo "导入数据库表结构和数据..."\n\
     mysql -u root -pchenxiang takeoutweb < /app/init.sql || true\n\
     echo "数据库导入完成"\n\
-    # 创建管理员账户\n\
-    echo "创建管理员账户..."\n\
-    mysql -u root -pchenxiang -e "INSERT INTO takeoutweb.manager (name, password) VALUES ('\''admin'\'', '\''123456'\'');" || true\n\
-    echo "管理员账户创建完成"\n\
+    # 导入初始账户数据\n\
+    echo "导入初始账户数据..."\n\
+    mysql -u root -pchenxiang takeoutweb < /app/init-data.sql || true\n\
+    echo "初始账户数据导入完成"\n\
     # 停止MySQL\n\
     service mysql stop\n\
     sleep 2\n\
@@ -203,7 +239,7 @@ RUN mkdir -p /app/logs /app/upload
 RUN touch /app/upload/ik.dic
 
 # 暴露端口：80(Nginx)、8080(后端API)、3306(MySQL)、6379(Redis)
-EXPOSE 80 8080 3306 6379
+EXPOSE 80 8080 3306 6379 9200
 
 # 启动命令
 CMD ["/app/start.sh"]

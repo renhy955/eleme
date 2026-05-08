@@ -60,6 +60,8 @@ public class MvcConfig implements WebMvcConfigurer{
                         "http://192.168.50.236:3000",
                         "http://localhost:9528",//后台和商家
                         "http://localhost:9528",
+                        "http://localhost:8090",
+                        "http://127.0.0.1:8090",
                         "http://cx-eleme.natapp1.cc:3030",
                         "http://cx-eleme.natapp1.cc"
                         )//设置允许跨域请求的域名

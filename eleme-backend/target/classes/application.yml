@@ -54,8 +54,10 @@ spring:
 
   autoconfigure:
     exclude:
-      - org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
+
+  elasticsearch:
+    rest:
+      uris: http://localhost:9200
 
 mybatis-plus:
   global-config:
